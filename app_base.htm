@@ -1,0 +1,12 @@
+<%inherit file="/homepage/templates/app_base.htm" />
+<%! from catalog import models as cmod %>
+
+
+<%block name="content_left">
+    <ul id="category_list">
+        <li> <a class= '${ 'activeone' if name == 'All Products' else '' }' href="/catalog/index/">All Products</a></li>
+        % for c in cmod.Category.objects.all():
+            <li><a class= '${ 'activeone' if name == c.name else '' }' href="/catalog/index/${ c.id }/">${ c.name }</a></li>
+        % endfor
+    </ul>
+</%block>
