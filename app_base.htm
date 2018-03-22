@@ -1,0 +1,82 @@
+<%inherit file="/homepage/templates/base.htm" />
+<%! from catalog import models as cmod %>
+
+<%block name="menu">
+    <nav class="navbar-inverse navbar-static-top">
+        <div class="container-fluid">
+          <div class="navbar-header">
+            <a class="navbar-brand" href="/index/"><i class="fa fa-music" aria-hidden="true"></i>   FOMO</a>
+          </div>
+          <ul class="nav navbar-nav">
+            <li class="${ 'active' if request.dmp.page == 'index' and request.dmp.app == 'homepage' else '' }"><a href="/index/">Home</a></li>
+            <li class="${ 'active' if request.dmp.page == 'sections' else '' }"><a href="/sections/">Sections</a></li>
+            <li class="${ 'active' if request.dmp.page == 'about' else '' }"><a href="/about/">About</a></li>
+            <li class="${ 'active' if request.dmp.page == 'contact' else '' }"><a href="/contact/">Contact</a></li>
+            <li class="${ 'active' if request.dmp.page == 'terms' else '' }"><a href="/terms/">Terms</a></li>
+            <li class="${ 'active' if request.dmp.page == 'faq' else '' }"><a href="/faq/">FAQ</a></li>
+            <li class="${ 'active' if request.dmp.app == 'catalog' else '' }"><a href="/catalog/">Products</a></li>
+          </ul>
+          <ul class="nav navbar-nav navbar-right">
+            % if request.user.is_authenticated:
+              <li class="dropdown"><a class="dropdown-toggle" data-toggle="dropdown" href="#">${ request.user }<span class="caret"></span></a>
+                <ul class="dropdown-menu">
+                    <li><a href="/account/index/">My Account</a></li>
+                    <li><a href="/account/logout/">Log Out</a></li>
+                </ul>
+              </li>
+            % else:
+              <li class="${ 'active' if request.dmp.page == 'signup' else '' }"><a href="/account/signup/"><span class="glyphicon glyphicon-user"></span> Sign Up</a></li>
+              <li class="${ 'active' if request.dmp.page == 'login' else '' }"><a href="/account/login/"><span class="glyphicon glyphicon-log-in"></span> Login</a></li>
+            % endif
+          </ul>
+        </div>
+    </nav>
+</%block>
+
+<%block name="content_left">
+    <div id='category_list'>
+        <%
+            category_list = cmod.Category.objects.all()
+            product_list = cmod.Product.objects.all()
+        %>
+        <ul>
+            % if cat_id == 0:
+                <li id='all_products'><a class='active' href='/catalog/index/'> All Products </a></li>
+            % else:
+                <li id='all_products'><a href='/catalog/index/'> All Products </a></li>
+            % endif
+            % for c in category_list:
+                % if cat_name == c.name:
+                    <li><a class='active' href='/catalog/index/${ c.id }'/> ${ c.name } </a></li>
+                % else:
+                    <li><a href='/catalog/index/${ c.id }'/> ${ c.name } </a></li>
+                % endif
+            % endfor
+        </ul>
+    </div>
+</%block>
+
+<%block name="content_right">
+    <div id='right_column'>
+        <h3>Recently Viewed</h3>
+        <ol>
+            <%
+                if request.dmp.page == 'detail':
+                    printlist = request.last_five[1:6]
+                else:
+                    printlist = request.last_five[0:5]
+            %>
+
+            % for product in printlist:
+                <a href='/catalog/detail/${ product.id }'>
+                    <li>
+                        <img src='${ product.image_url() }' alt='Image Icon'/>
+                        <div>
+                            ${ product.name }
+                        </div>
+                    </li>
+                </a>
+            % endfor
+        </ol>
+    </div>
+</%block>
