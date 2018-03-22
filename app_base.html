@@ -1,0 +1,47 @@
+<%inherit file = "/homepage/templates/app_base.htm" />
+<%! from catalog import models as cmod%>
+
+
+<%block name ="left_column">
+
+  <div id ='active_section'>
+      <ul id="category_list">
+
+      <li>
+          <a class = '${'activeone' if cat_name == 'All Products' else ''}' href="/catalog/index/0/">All Products</a>
+      </li>
+
+        % for categories in cmod.Category.objects.all():
+            <li>
+                <a class ='${ 'activeone' if cat_name == categories.name else ''}' href="/catalog/index/${ categories.id}/">${categories.name}</a>
+            </li>
+        % endfor
+      </ul>
+  </div>
+</%block>
+
+
+
+
+<%block name ="right_column">
+<h2 class="recent">Recently Viewed:</h2>
+<ol class ='pic_list'>
+  <%
+    if request.dmp.page == 'details':
+      printlist = request.last_five[1:6]
+    else:
+      printlist = request.last_five[0:5]
+  %>
+  %for pic in printlist:
+      <a href="/catalog/details/${pic.id}">
+        <li>
+          <img src= '${pic.image_url()}' class='thumb' alt= '${pic.name}'/>
+          <div class= proName>
+            ${pic.name}
+          </div>
+        </li>
+      </a>
+  %endfor
+</ol>
+
+</%block>
