@@ -1,0 +1,79 @@
+<%inherit file="/homepage/templates/base.htm"/>
+
+<%block name="myheader">
+  <nav class="navbar navbar-inverse">
+    <div class="container-fluid">
+      <div class="navbar-header">
+        <i class="fa fa-headphones fa-4x" style="color:#3D5A67;"></i>
+        <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+          <span class="sr-only">Toggle navigation</span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+      </div>
+
+      <div id="navbar" class="navbar-collapse collapse">
+        <ul class="nav navbar-nav">
+          <li><a href="/index/">Home</a></li>
+          <li><a href="/faq/">FAQ</a></li>
+          <li><a href="/terms/">Terms</a></li>
+          <li><a href="/sections/">Sections</a></li>
+          <li><a href="/contact/">Contact</a></li>
+          <li><a href="/about/">About</a></li>
+          <li class = 'active'><a href="">Products</a></li>
+        </ul>
+        <ul class="nav navbar-nav navbar-right">
+          %if request.user.is_authenticated:
+            <li class="dropdown">
+              <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">${ request.user }<span class="caret"></span></a>
+              <ul class="dropdown-menu">
+                <li><a href="/account/"><i class="fa fa-id-card" style="color:#3D5A67;"></i> Account</a></li>
+                <li><a href="/account/logout/"><i class="fa fa-user-times" style="color:#3D5A67;"></i> Log out</a></li>
+              </ul>
+            </li>
+          %else:
+            <li><a href="/account/login/"><i class="fa fa-sign-in"></i> Log in</a></li>
+            <li><a href="/account/signup/"><i class="fa fa-user-plus"></i> Sign up</a></li>
+          %endif
+        </ul>
+      </div>
+    </div>
+  </nav>
+</%block>
+
+<%block name="left_column">
+  <ul id='catlist'>
+    <li><a id='allprod' href='/catalog/index'/>All Products</a></li>
+    <%! from catalog import models as cmod %>
+    % for c in cmod.Category.objects.all():
+      % if category == c.name:
+        <li><a class ='active' href='/catalog/index/${c.id}'/>${c.name}</a></li>
+      % else:
+        <li><a href='/catalog/index/${c.id}'/>${c.name}</a></li>
+      % endif
+    % endfor
+  </ul>
+</%block>
+
+<%block name="right_column">
+  <h2 class="cen">Recently Viewed:</h2>
+  <ol class="rv cen">
+  <%
+    if request.dmp.page == 'details':
+      printlist = request.last_five[1:6]
+    else:
+      printlist = request.last_five[0:5]
+  %>
+  %for pic in printlist:
+      <a href="/catalog/details/${pic.id}">
+        <li>
+          <img class="rvpics" src= '${pic.image_url()}' alt= '${pic.name}'/>
+          <div class="cen">
+            ${pic.name}
+          </div>
+        </li>
+      </a>
+  %endfor
+  </ol>
+</%block>
